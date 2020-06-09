@@ -1,0 +1,23 @@
+# create the virtual env
+pyenv virtualenv 3.7.0 pytwit
+pyenv activate pytwit
+pip install -U pip
+
+# docs
+https://python-twitter.readthedocs.io/en/latest/
+
+# create an app
+https://developer.twitter.com/en/apps
+https://developer.twitter.com/en/apps/17847827
+python-twitter-playground
+
+# install deps
+pip install python-twitter
+
+
+# connect to twitter
+import twitter
+api = twitter.Api(consumer_key = "<YOUR_CONSUMER_KEY>",
+                  consumer_secret = "<YOUR_CONSUMER_SECRET>",
+                  access_token_key = "<YOUR_ACCESS_TOKEN_KEY>",
+                  access_token_secret = "<YOUR_ACCESS_TOKEN_SECRET>")
