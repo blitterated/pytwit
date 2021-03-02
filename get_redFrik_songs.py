@@ -4,6 +4,15 @@ import sys
 import twitter
 from twcred import ACCESS_TOKEN_KEY, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET
 
+class Twert:
+    def __init__(self, tweet):
+        self.created_at = tweet.created_at
+        self.url = tweet.urls[0].expanded_url
+        self.text = tweet.text
+
+    def __str__(self):
+        return "\n".join([self.created_at, self.url, self.text]) + "\n"
+
 
 def get_tweets(api=None, screen_name=None):
     timeline = api.GetUserTimeline(screen_name=screen_name, count=1000)
@@ -35,8 +44,9 @@ def main():
     print(screen_name)
     timeline = get_tweets(api=api, screen_name=screen_name)
 
-    for json_tweet in timeline:
-        print(json.dumps(json_tweet._json))
+    for tweet in timeline[:2]:
+        print("-"*20)
+        print(Twert(tweet))
 
 
 if __name__ == "__main__":
