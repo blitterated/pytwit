@@ -8,7 +8,7 @@ class Twert:
     def __init__(self, tweet):
         self.created_at = self.parse_date(tweet.created_at)
         #self.url = tweet.urls[0].expanded_url
-        self.text = tweet.text
+        self.text = tweet.full_text  # .text is empty when tweet_mode is "extended"
 
     def __str__(self):
        # return "\n".join([self.created_at, self.url, self.text]) + "\n"
@@ -63,15 +63,18 @@ def main():
     api = twitter.Api(consumer_key=CONSUMER_KEY,
                       consumer_secret=CONSUMER_SECRET,
                       access_token_key=ACCESS_TOKEN_KEY,
-                      access_token_secret=ACCESS_TOKEN_SECRET)
+                      access_token_secret=ACCESS_TOKEN_SECRET,
+                      tweet_mode="extended")
+
     screen_name = sys.argv[1]
     print(screen_name)
     timeline = get_tweets(api=api, screen_name=screen_name)
 
-    for tweet in timeline[:20]:
-        print("-"*20)
-        print(Twert(tweet))
-        #print(type(tweet.created_at).__name__)
+    with open('redFrik_SC_tweets.txt', 'w+') as f:
+        for tweet in timeline[:20]:
+            f.write("-"*20)
+            f.write(str(Twert(tweet)))
+            #print(type(tweet.created_at).__name__)
 
 
 if __name__ == "__main__":

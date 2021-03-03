@@ -26,7 +26,18 @@ import twitter
 api = twitter.Api(consumer_key = "<YOUR_CONSUMER_KEY>",
                   consumer_secret = "<YOUR_CONSUMER_SECRET>",
                   access_token_key = "<YOUR_ACCESS_TOKEN_KEY>",
-                  access_token_secret = "<YOUR_ACCESS_TOKEN_SECRET>")
+                  access_token_secret = "<YOUR_ACCESS_TOKEN_SECRET>",
+                  tweet_mode="extended")
+
+timeline = api.GetUserTimeline(screen_name="@redFrik", count=1000)
+
+len(timeline)
+timeline[0]
+dir(timeline[0])
+timeline[0].created_at
+timeline[0].text
+timeline[0].tweet_mode
+timeline[1].full_text
 ```
 
 ### Example json status returned by API
