@@ -167,6 +167,7 @@ Refs:
 * [How to repeat a string in Python](https://www.kite.com/python/answers/how-to-repeat-a-string-in-python)
 * [Converting Strings to datetime in Python](https://stackabuse.com/converting-strings-to-datetime-in-python/)
 * [strftime() and strptime() Format Codes](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes)
+* [Retreive tweet full text when tweet_mode is extended](https://github.com/tweepy/tweepy/issues/878)
 
 
 

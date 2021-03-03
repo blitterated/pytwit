@@ -4,14 +4,15 @@ import datetime
 import twitter
 from twcred import ACCESS_TOKEN_KEY, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET
 
+
 class Twert:
     def __init__(self, tweet):
         self.created_at = self.parse_date(tweet.created_at)
-        #self.url = tweet.urls[0].expanded_url
+        # self.url = tweet.urls[0].expanded_url
         self.text = tweet.full_text  # .text is empty when tweet_mode is "extended"
 
     def __str__(self):
-       # return "\n".join([self.created_at, self.url, self.text]) + "\n"
+        # return "\n".join([self.created_at, self.url, self.text]) + "\n"
         return "\n".join([self.fmt_created_at(), self.text]) + "\n"
 
     def parse_date(self, a_date):
@@ -38,7 +39,7 @@ class Twert:
         return self.created_at.strftime(dt_fmt)
 
 
-def get_tweets(api=None, screen_name=None):
+def get_timeline(api=None, screen_name=None):
     timeline = api.GetUserTimeline(screen_name=screen_name, count=1000)
     earliest_tweet = min(timeline, key=lambda x: x.id).id
     print("getting tweets before:", earliest_tweet)
@@ -59,6 +60,10 @@ def get_tweets(api=None, screen_name=None):
     return timeline
 
 
+def filter_tweets(timeline=None, filter_term=""):
+    return [tw for tw in timeline if filter_term in tw.full_text]
+
+
 def main():
     api = twitter.Api(consumer_key=CONSUMER_KEY,
                       consumer_secret=CONSUMER_SECRET,
@@ -68,13 +73,16 @@ def main():
 
     screen_name = sys.argv[1]
     print(screen_name)
-    timeline = get_tweets(api=api, screen_name=screen_name)
+    timeline = get_timeline(api=api, screen_name=screen_name)
+
+    sc_tweets = filter_tweets(timeline=timeline, filter_term="// #SuperCollider")
+    print(len(sc_tweets))
 
     with open('redFrik_SC_tweets.txt', 'w+') as f:
-        for tweet in timeline[:20]:
-            f.write("-"*20)
+        for tweet in sc_tweets:
+            f.write("-" * 20 + "\n")
             f.write(str(Twert(tweet)))
-            #print(type(tweet.created_at).__name__)
+            # print(type(tweet.created_at).__name__)
 
 
 if __name__ == "__main__":
