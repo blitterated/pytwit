@@ -14,8 +14,7 @@ class Twert:
         self.text = tweet.full_text  # .text is empty when tweet_mode is "extended"
 
     def __str__(self):
-        # return "\n".join([self.created_at_formatted, self.url, self.text]) + "\n"
-        return "\n".join([self.created_at_formatted, self.text]) + "\n"
+        return "\n".join([self.created_at_formatted, self.url, self.text]) + "\n"
 
     def _parse_date(self, a_date):
         # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
@@ -41,7 +40,7 @@ class Twert:
         return a_date.strftime(dt_fmt)
 
     def _create_url_from_id(self, twid):
-        return "https://twitter.com/{uname}/status/{twid}".format(uname=self._username, twid=twid)
+        return "https://twitter.com/{u}/status/{twid}".format(u=self._username, twid=twid)
 
     @property
     def created_at(self):
@@ -121,10 +120,11 @@ def main():
     sc_tweets = filter_tweets(timeline=timeline, filter_term="// #SuperCollider")
     print(len(sc_tweets))
 
-    with open('redFrik_SC_tweets.txt', 'w+') as f:
+    filename = '{sn}_tweets.txt'.format(sn=screen_name.replace("@", ""))
+
+    with open(filename, 'w+') as f:
         for tweet in sc_tweets:
             output_twert_to_file(f, Twert(tweet))
-            # print(type(tweet.created_at).__name__)
 
 
 if __name__ == "__main__":

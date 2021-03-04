@@ -188,7 +188,9 @@ pprint(sc_tweets[0])
 * [Python: Check if String Contains Substring](https://stackabuse.com/python-check-if-string-contains-substring/)
 * [if/else in a list comprehension](https://stackoverflow.com/a/4260304)
 * [How To Pretty Print in Python](https://betterprogramming.pub/how-to-pretty-print-in-python-9b1d8764d151)
-*
+* [Python String format() Method](https://www.w3schools.com/python/ref_string_format.asp)
+* [bpython](https://bpython-interpreter.org/)
+* [ptpython](https://github.com/prompt-toolkit/ptpython)
 
 
 
