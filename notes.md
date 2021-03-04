@@ -26,6 +26,11 @@ import twitter
 api = twitter.Api(consumer_key = "<YOUR_CONSUMER_KEY>",
                   consumer_secret = "<YOUR_CONSUMER_SECRET>",
                   access_token_key = "<YOUR_ACCESS_TOKEN_KEY>",
+                  access_token_secret = "<YOUR_ACCESS_TOKEN_SECRET>")
+
+api = twitter.Api(consumer_key = "<YOUR_CONSUMER_KEY>",
+                  consumer_secret = "<YOUR_CONSUMER_SECRET>",
+                  access_token_key = "<YOUR_ACCESS_TOKEN_KEY>",
                   access_token_secret = "<YOUR_ACCESS_TOKEN_SECRET>",
                   tweet_mode="extended")
 
@@ -38,6 +43,16 @@ timeline[0].created_at
 timeline[0].text
 timeline[0].tweet_mode
 timeline[1].full_text
+
+sc_tweets = [tw for tw in timeline if "// #SuperCollider" in tw.full_text]
+len(sc_tweets)
+
+from pprint import pprint
+pprint(timeline)
+pprint(timeline[0])
+
+pprint(sc_tweets)
+pprint(sc_tweets[0])
 ```
 
 ### Example json status returned by API
@@ -147,14 +162,15 @@ timeline[1].full_text
 
 ### Example of formatted status
 
-    // Apr 26, 2020
-    // https://twitter.com/redFrik/status/1254441448327479299
-    play{ar(FreeVerb,ar(Splay,ar(SinOscFB,ar(DegreeToKey,as(b=[1,3,5,8,10],LocalBuf),ar(Duty,(e=[3,2/3,4,3/2,2])/(12**ar(a=LFTri,b*c=0.021)),0,ar(a,b*c)*7+20+Dseq(b%(ar(a,b*c)*5+6),inf))).midicps,ar(a,c/b)+1/3,ar(Decay2,ar(Impulse,e@@b),c,d=ar(a,b/999)%1)*d)),0.1,1)}
-    // *****
+    // Aug 5, 2017
+    // https://twitter.com/redFrik/status/893964744390037506
+    // notes:  rhythmic chirping, Spectrograph
+    // audio rating: *****
+    // spectrograph rating: *****
+    play{a=SinOsc;b=Duty;c={Dseq([5,1,3,2],1/0)};a.ar(b.ar(e=1/[8,4],0,c.()*b.ar(e/4,0,c.()))*b.ar(1/e,0,c.()*28.8))*a.ar(e/9)}
 
 
-
-Refs:
+# References
 * [python-twitter documentation](https://python-twitter.readthedocs.io/en/latest/)
 * [Keyword (Named) Arguments in Python: How to Use Them](https://treyhunner.com/2018/04/keyword-arguments-in-python/)
 * [Going From a List to a String in Python With .join()](https://realpython.com/python-string-split-concatenate-join/#going-from-a-list-to-a-string-in-python-with-join)
@@ -168,6 +184,20 @@ Refs:
 * [Converting Strings to datetime in Python](https://stackabuse.com/converting-strings-to-datetime-in-python/)
 * [strftime() and strptime() Format Codes](https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes)
 * [Retreive tweet full text when tweet_mode is extended](https://github.com/tweepy/tweepy/issues/878)
+* [Python @property decorator](https://www.programiz.com/python-programming/property)
+* [Python: Check if String Contains Substring](https://stackabuse.com/python-check-if-string-contains-substring/)
+* [if/else in a list comprehension](https://stackoverflow.com/a/4260304)
+* [How To Pretty Print in Python](https://betterprogramming.pub/how-to-pretty-print-in-python-9b1d8764d151)
+*
 
 
+
+
+# Gripes
+
+```
+I hate this kind of bullshit. If you just “vanilla” request tweets from twitter, you get the tweet truncated to 140 chars and the tweet’s url (compatibility mode).
+If you specify tweet_mode=“extended”, you get all the chars in the tweet, but zero urls.
+So much for element of least surprise
+```
 
