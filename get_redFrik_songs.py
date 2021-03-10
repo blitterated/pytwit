@@ -6,6 +6,7 @@ from twcred import ACCESS_TOKEN_KEY, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER
 
 
 class Twert:
+
     def __init__(self, tweet):
         self._username = tweet.user.screen_name
 
@@ -16,7 +17,15 @@ class Twert:
     def __str__(self):
         return "\n".join([self.created_at_formatted, self.url, self.text]) + "\n"
 
-    def _parse_date(self, a_date):
+    def _create_url_from_id(self, twid):
+        return "https://twitter.com/{u}/status/{twid}".format(u=self._username, twid=twid)
+
+    @property
+    def created_at(self):
+        return self._created_at
+
+    @created_at.setter
+    def created_at(self, a_date):
         # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
         # %a        weekday abbrev.
         # %b        month abbrev.
@@ -28,31 +37,17 @@ class Twert:
         # %Y        year with century
 
         dt_fmt = "%a %b %d %H:%M:%S %z %Y"
-        return datetime.datetime.strptime(a_date, dt_fmt)
+        self._created_at = datetime.datetime.strptime(a_date, dt_fmt)
 
-    def _format_date(self, a_date):
+    @property
+    def created_at_formatted(self):
         # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
         # %b        month abbrev.
         # %d        day of month, zero padded
         # %Y        year with century
 
         dt_fmt = "%b %d, %Y"
-        return a_date.strftime(dt_fmt)
-
-    def _create_url_from_id(self, twid):
-        return "https://twitter.com/{u}/status/{twid}".format(u=self._username, twid=twid)
-
-    @property
-    def created_at(self):
-        return self._created_at
-
-    @created_at.setter
-    def created_at(self, a_date):
-        self._created_at = self._parse_date(a_date=a_date)
-
-    @property
-    def created_at_formatted(self):
-        return self._format_date(a_date=self._created_at)
+        return self._created_at.strftime(dt_fmt)
 
     @property
     def url(self):
