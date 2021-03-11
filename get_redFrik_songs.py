@@ -121,10 +121,14 @@ class TwertTimeline:
     def __init__(self, screen_name=None, timeline=None):
         """Constructor
 
-        :return: A new TwitterClient instance
+        Converts python-twitter timeline of statuses into Twerts
+
+        :return: A new TwertTimeline instance
         """
+        if timeline is None:
+            timeline = []
         self.screen_name = screen_name
-        self.timeline = timeline
+        self.timeline = map(lambda t: Twert(t), timeline)
 
     def __len__(self):
         return len(self.timeline)
@@ -170,8 +174,10 @@ class TwertTimeline:
         :param filter_term: A discrete text string used for matching
         :return: a new, filtered TwertTimeline
         """
-        filtered_timeline = [s for s in self.timeline if filter_term in s.full_text]
-        return TwertTimeline(self.screen_name, filtered_timeline)
+        filtered_timeline = [s for s in self.timeline if filter_term in s.text]
+        new_timeline = TwertTimeline(self._screen_name, None)
+        new_timeline.timeline = filtered_timeline
+        return new_timeline
 
 
 class TwitterClient:
@@ -214,7 +220,7 @@ class TwitterClient:
         return TwertTimeline(screen_name, timeline)
 
 
-class TimelineFileWriter:
+class TwertTimelineFileWriter:
 
     def __init__(self, timeline):
         """ Constructor
@@ -229,8 +235,7 @@ class TimelineFileWriter:
         """Write statuses out to a file
         """
         with open(self._filename, 'w+') as f:
-            for tweet in self._timeline:
-                twert = Twert(tweet)
+            for twert in self._timeline:
                 f.write("// {} \n".format(twert.created_at_formatted))
                 f.write("// {} \n".format(twert.url))
                 f.write("// notes: \n")
@@ -254,7 +259,7 @@ def main():
     timeline = client.get_timeline(screen_name=screen_name) \
         .filter(filter_term="// #SuperCollider")
 
-    TimelineFileWriter(timeline).write()
+    TwertTimelineFileWriter(timeline).write()
 
     print("{} tweets processed.".format(len(timeline)))
 
