@@ -13,7 +13,7 @@ class Twert:
 
         :return: A new Twert instance
         """
-        self._username = tweet.user.screen_name
+        self._screen_name = tweet.user.screen_name
 
         self.created_at = tweet.created_at
         self.url = self._create_url_from_id(twid=tweet.id_str)
@@ -34,7 +34,7 @@ class Twert:
         :param twid: The id of a Twitter status. Found in the json fields "id" or "id_str"
         :return: A URL in string format
         """
-        return "https://twitter.com/{u}/status/{twid}".format(u=self._username, twid=twid)
+        return "https://twitter.com/{u}/status/{twid}".format(u=self._screen_name, twid=twid)
 
     @property
     def created_at(self):
@@ -189,12 +189,15 @@ class TwitterClient:
         This pages through and pulls down statuses in batches since Twitter only allows us to pull a certain number
         per call
 
+        Taken from the python-twitter examples here:
+
+            https://github.com/bear/python-twitter/blob/master/examples/get_all_user_tweets.py#L23
+
         :param screen_name: The user's screen name on Twitter, e.g. "@foobar"
         :return: a python-twitter Timeline object
         """
         timeline = self._api.GetUserTimeline(screen_name=screen_name, count=1000)
         earliest_tweet = min(timeline, key=lambda x: x.id).id
-        print("getting tweets before:", earliest_tweet)
 
         while True:
             tweets = self._api.GetUserTimeline(
@@ -206,20 +209,35 @@ class TwitterClient:
                 break
             else:
                 earliest_tweet = new_earliest
-                print("getting tweets before:", earliest_tweet)
                 timeline += tweets
 
         return TwertTimeline(screen_name, timeline)
 
 
-def output_twert_to_file(file=None, twert=None):
-    file.write("// {} \n".format(twert.created_at_formatted))
-    file.write("// {} \n".format(twert.url))
-    file.write("// notes: \n")
-    file.write("// audio rating: \n")
-    file.write("// spectrograph rating: \n")
-    file.write(twert.text)
-    file.write("\n" * 3)
+class TimelineFileWriter:
+
+    def __init__(self, timeline):
+        """ Constructor
+
+        :param timeline: A python-twitter timeline
+        """
+        self._timeline = timeline
+        self._filename = \
+            '{sn}_tweets.txt'.format(sn=timeline.screen_name.replace("@", ""))
+
+    def write(self):
+        """Write statuses out to a file
+        """
+        with open(self._filename, 'w+') as f:
+            for tweet in self._timeline:
+                twert = Twert(tweet)
+                f.write("// {} \n".format(twert.created_at_formatted))
+                f.write("// {} \n".format(twert.url))
+                f.write("// notes: \n")
+                f.write("// audio rating: \n")
+                f.write("// spectrograph rating: \n")
+                f.write(twert.text)
+                f.write("\n" * 3)
 
 
 def main():
@@ -235,13 +253,10 @@ def main():
     client = TwitterClient(twitter_api=api)
     timeline = client.get_timeline(screen_name=screen_name) \
         .filter(filter_term="// #SuperCollider")
-    print(len(timeline))
 
-    filename = '{sn}_tweets.txt'.format(sn=screen_name.replace("@", ""))
+    TimelineFileWriter(timeline).write()
 
-    with open(filename, 'w+') as f:
-        for tweet in timeline:
-            output_twert_to_file(f, Twert(tweet))
+    print("{} tweets processed.".format(len(timeline)))
 
 
 if __name__ == "__main__":
