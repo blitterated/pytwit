@@ -6,8 +6,13 @@ from twcred import ACCESS_TOKEN_KEY, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER
 
 
 class Twert:
+    """A representation of an individual Twitter status"""
 
     def __init__(self, tweet):
+        """Constructor
+
+        :return: A new Twert instance
+        """
         self._username = tweet.user.screen_name
 
         self.created_at = tweet.created_at
@@ -15,54 +20,99 @@ class Twert:
         self.text = tweet.full_text  # .text is empty when tweet_mode is "extended"
 
     def __str__(self):
+        r"""Override of standard __str__ method
+
+        Use this in methods that will treat a Twert as a string, e.g. logging methods.
+
+        :return: A \n separated string of the interesting fields from the status
+        """
         return "\n".join([self.created_at_formatted, self.url, self.text]) + "\n"
 
     def _create_url_from_id(self, twid):
+        """ Create a URL from the status id
+
+        :param twid: The id of a Twitter status. Found in the json fields "id" or "id_str"
+        :return: A URL in string format
+        """
         return "https://twitter.com/{u}/status/{twid}".format(u=self._username, twid=twid)
 
     @property
     def created_at(self):
+        """Date & time when the status was posted
+
+        :return: Datetime
+        """
         return self._created_at
 
     @created_at.setter
     def created_at(self, a_date):
-        # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
-        # %a        weekday abbrev.
-        # %b        month abbrev.
-        # %d        day of month, zero padded
-        # %H        hour, 24 hour clock
-        # %M        minute, zero padded
-        # %S        seconds, zero padded
-        # %z        UTC offset
-        # %Y        year with century
+        """Sets the datetime of when a status was created
 
+        The created_at date in the json has the following format:
+
+            Sat Jan 30 14:32:27 +0000 2021
+
+        It's parsed using the following codes in the formatting string taken from the docs.
+        https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+        %a        weekday abbrev.
+        %b        month abbrev.
+        %d        day of month, zero padded
+        %H        hour, 24 hour clock
+        %M        minute, zero padded
+        %S        seconds, zero padded
+        %z        UTC offset
+        %Y        year with century
+
+        :param a_date: The string representation of the status' creation date and time. It comes from the "created_at" field in the status' json
+        """
         dt_fmt = "%a %b %d %H:%M:%S %z %Y"
         self._created_at = datetime.datetime.strptime(a_date, dt_fmt)
 
     @property
     def created_at_formatted(self):
-        # https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
-        # %b        month abbrev.
-        # %d        day of month, zero padded
-        # %Y        year with century
+        """The created_at date formatted for printing
 
+        The date & time are formatted using the following codes the docs.
+        https://docs.python.org/3/library/datetime.html#strftime-and-strptime-format-codes
+        %b        month abbrev.
+        %d        day of month, zero padded
+        %Y        year with century
+
+        :return: Formatted created_at string
+        """
         dt_fmt = "%b %d, %Y"
         return self._created_at.strftime(dt_fmt)
 
     @property
     def url(self):
+        """URL of the status on Twitter
+
+        :return: URL string
+        """
         return self._url
 
     @url.setter
     def url(self, url):
+        """Sets URL of the status on Twitter
+
+        :param url: URL string
+        """
         self._url = url
 
     @property
     def text(self):
+        """The body text of the status on Twitter
+
+        :return: URL string
+        """
         return self._text
 
     @text.setter
     def text(self, text):
+        """Sets body text of the status
+
+        :param text: Text found in the "text" json field of a Twitter status
+        """
         self._text = text
 
 
