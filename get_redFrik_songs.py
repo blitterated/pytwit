@@ -200,7 +200,7 @@ class TwitterClient:
             https://github.com/bear/python-twitter/blob/master/examples/get_all_user_tweets.py#L23
 
         :param screen_name: The user's screen name on Twitter, e.g. "@foobar"
-        :return: a python-twitter Timeline object
+        :return: a TwertTimeline
         """
         timeline = self._api.GetUserTimeline(screen_name=screen_name, count=1000)
         earliest_tweet = min(timeline, key=lambda x: x.id).id
