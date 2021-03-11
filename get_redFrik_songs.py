@@ -116,29 +116,100 @@ class Twert:
         self._text = text
 
 
-def get_timeline(api=None, screen_name=None):
-    timeline = api.GetUserTimeline(screen_name=screen_name, count=1000)
-    earliest_tweet = min(timeline, key=lambda x: x.id).id
-    print("getting tweets before:", earliest_tweet)
+class TwertTimeline:
 
-    while True:
-        tweets = api.GetUserTimeline(
-            screen_name=screen_name, max_id=earliest_tweet, count=200
-        )
-        new_earliest = min(tweets, key=lambda x: x.id).id
+    def __init__(self, screen_name=None, timeline=None):
+        """Constructor
 
-        if not tweets or new_earliest == earliest_tweet:
-            break
-        else:
-            earliest_tweet = new_earliest
-            print("getting tweets before:", earliest_tweet)
-            timeline += tweets
+        :return: A new TwitterClient instance
+        """
+        self.screen_name = screen_name
+        self.timeline = timeline
 
-    return timeline
+    def __len__(self):
+        return len(self.timeline)
+
+    def __iter__(self):
+        return iter(self.timeline)
+
+    @property
+    def screen_name(self):
+        """Get a given user's screen_name
+
+        :return: a screen_name
+        """
+        return self._screen_name
+
+    @screen_name.setter
+    def screen_name(self, screen_name):
+        """Set a given user's screen_name
+
+        :param screen_name: a given user's screen_name
+        """
+        self._screen_name = screen_name
+
+    @property
+    def timeline(self):
+        """Get a given user's timeline of statuses
+
+        :return: a python-twitter Timeline object
+        """
+        return self._timeline
+
+    @timeline.setter
+    def timeline(self, timeline):
+        """Set a given user's timeline of statuses
+
+        :param timeline: a given user's timeline pulled from Twitter's API. A python-twitter timeline object.
+        """
+        self._timeline = timeline
+
+    def filter(self, filter_term=""):
+        """Filter through statuses in the timeline that match the filter_term
+
+        :param filter_term: A discrete text string used for matching
+        :return: a new, filtered TwertTimeline
+        """
+        filtered_timeline = [s for s in self.timeline if filter_term in s.full_text]
+        return TwertTimeline(self.screen_name, filtered_timeline)
 
 
-def filter_tweets(timeline=None, filter_term=""):
-    return [tw for tw in timeline if filter_term in tw.full_text]
+class TwitterClient:
+
+    def __init__(self, twitter_api=None):
+        """Constructor
+
+        :return: A new TwitterClient instance
+        """
+        self._api = twitter_api
+
+    def get_timeline(self, screen_name=None):
+        """Fetch the entirety of statuses from a user's (screen_name's) timeline
+
+        This pages through and pulls down statuses in batches since Twitter only allows us to pull a certain number
+        per call
+
+        :param screen_name: The user's screen name on Twitter, e.g. "@foobar"
+        :return: a python-twitter Timeline object
+        """
+        timeline = self._api.GetUserTimeline(screen_name=screen_name, count=1000)
+        earliest_tweet = min(timeline, key=lambda x: x.id).id
+        print("getting tweets before:", earliest_tweet)
+
+        while True:
+            tweets = self._api.GetUserTimeline(
+                screen_name=screen_name, max_id=earliest_tweet, count=200
+            )
+            new_earliest = min(tweets, key=lambda x: x.id).id
+
+            if not tweets or new_earliest == earliest_tweet:
+                break
+            else:
+                earliest_tweet = new_earliest
+                print("getting tweets before:", earliest_tweet)
+                timeline += tweets
+
+        return TwertTimeline(screen_name, timeline)
 
 
 def output_twert_to_file(file=None, twert=None):
@@ -148,27 +219,28 @@ def output_twert_to_file(file=None, twert=None):
     file.write("// audio rating: \n")
     file.write("// spectrograph rating: \n")
     file.write(twert.text)
-    file.write("\n"*3)
+    file.write("\n" * 3)
 
 
 def main():
+    screen_name = sys.argv[1]
+    print(screen_name)
+
     api = twitter.Api(consumer_key=CONSUMER_KEY,
                       consumer_secret=CONSUMER_SECRET,
                       access_token_key=ACCESS_TOKEN_KEY,
                       access_token_secret=ACCESS_TOKEN_SECRET,
                       tweet_mode="extended")
 
-    screen_name = sys.argv[1]
-    print(screen_name)
-    timeline = get_timeline(api=api, screen_name=screen_name)
-
-    sc_tweets = filter_tweets(timeline=timeline, filter_term="// #SuperCollider")
-    print(len(sc_tweets))
+    client = TwitterClient(twitter_api=api)
+    timeline = client.get_timeline(screen_name=screen_name) \
+        .filter(filter_term="// #SuperCollider")
+    print(len(timeline))
 
     filename = '{sn}_tweets.txt'.format(sn=screen_name.replace("@", ""))
 
     with open(filename, 'w+') as f:
-        for tweet in sc_tweets:
+        for tweet in timeline:
             output_twert_to_file(f, Twert(tweet))
 
 
