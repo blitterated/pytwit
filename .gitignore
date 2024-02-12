@@ -1,8 +1,22 @@
+# ignore these annoying macOS files
 .DS_Store
+
+# ignore vim swap file
 *.swp
+
+# ignore python housekeeping
 .python-version
 __pycache__/
+
+# ignore pycharm/jetbrains files
 .idea/workspace.xml
 .idea/tasks.xml
+
+# ignore pytwit result files
 *_tweets.txt
+
+# ignore top secret configuration files
 twcred_real.py
+
+# Ignore build logs
+logs/
