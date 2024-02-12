@@ -197,9 +197,6 @@ pprint(sc_tweets[0])
 
 # Gripes
 
-```
-I hate this kind of bullshit. If you just “vanilla” request tweets from twitter, you get the tweet truncated to 140 chars and the tweet’s url (compatibility mode).
-If you specify tweet_mode=“extended”, you get all the chars in the tweet, but zero urls.
-So much for element of least surprise
-```
-
+This kind of stuff is frustrating.
+If you just “vanilla” request tweets from twitter, you get the tweet truncated to 140 chars and the tweet’s url (compatibility mode).
+If you specify tweet_mode=“extended”, you get all the chars in the tweet, but zero urls. So much for the element of least surprise.
