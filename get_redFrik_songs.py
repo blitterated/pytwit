@@ -1,9 +1,8 @@
 import sys
 import datetime
+import importlib
 
 import twitter
-from twcred import ACCESS_TOKEN_KEY, ACCESS_TOKEN_SECRET, CONSUMER_KEY, CONSUMER_SECRET
-
 
 class Twert:
     """A representation of an individual Twitter status"""
@@ -246,16 +245,22 @@ class TwertTimelineFileWriter:
 
 
 def main():
-    screen_name = sys.argv[1]
-    print(screen_name)
+    secrets_file = sys.argv[2]
+    print("Importing secrets from {}.".format(secrets_file))
+    secrets = importlib.import_module(secrets_file)
 
-    api = twitter.Api(consumer_key=CONSUMER_KEY,
-                      consumer_secret=CONSUMER_SECRET,
-                      access_token_key=ACCESS_TOKEN_KEY,
-                      access_token_secret=ACCESS_TOKEN_SECRET,
+    screen_name = sys.argv[1]
+    print("Pulling tweets for {}.".format(screen_name))
+
+    api = twitter.Api(consumer_key=secrets.CONSUMER_KEY,
+                      consumer_secret=secrets.CONSUMER_SECRET,
+                      access_token_key=secrets.ACCESS_TOKEN_KEY,
+                      access_token_secret=secrets.ACCESS_TOKEN_SECRET,
                       tweet_mode="extended")
 
     client = TwitterClient(twitter_api=api)
+
+    # TODO: the SuperCollider filtering is verrrry specific to one case. Push into another script or class.
     timeline = client.get_timeline(screen_name=screen_name) \
         .filter(filter_term="// #SuperCollider")
 
