@@ -13,7 +13,7 @@ __pycache__/
 .idea/tasks.xml
 
 # ignore pytwit result files
-*_tweets.txt
+*_tweets.*
 
 # ignore top secret configuration files
 twcred_real.py
