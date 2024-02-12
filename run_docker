@@ -1,0 +1,17 @@
+#!/bin/bash
+
+source ./docker_common.sh
+
+if container_exists
+then
+  echo "Container $CONTAINER_NAME exists."
+  echo "Starting container."
+  docker start -ai $CONTAINER_NAME
+else
+  echo "Container $CONTAINER_NAME does not exist."
+  echo "Creating and running new container and binding to current directory."
+  docker run -it \
+    --mount type=bind,source="$(pwd)",target="/src" \
+    --name $CONTAINER_NAME \
+    $IMAGE_TAG
+fi

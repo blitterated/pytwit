@@ -1,0 +1,15 @@
+#!/bin/bash
+
+source ./docker_common.sh
+
+function delete_existing_container () {
+  if container_exists; then
+    echo "Found existing container. Deleting..."
+    docker rm $CONTAINER_NAME
+  else
+    echo "No existing container found."
+  fi
+}
+
+{ time delete_existing_container; docker build --progress=plain -t "${IMAGE_TAG}" . ; } 2>&1 \
+| tee "./logs/${IMAGE_TAG}-build-$(date +'%s').log"
